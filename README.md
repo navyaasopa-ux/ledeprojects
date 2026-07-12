@@ -7,14 +7,14 @@ This is all about Netflix films and TV shows in the pandemic year of 2019- their
 
 Sources:
 Kaggle: Netflix Movies and TV Shows Data Analysis
-DataWrapper
+; DataWrapper
 
 Project 2:
 This dataset is about COVID-19 misinformation patterns across countries, sources, and narratives.
 
 Sources:
 Empirical Studies of Conflict, Princeton University, 2020: ESOC COVID-19 Misinformation Dataset
-DataWrapper
+; DataWrapper
 
 
 Contact
