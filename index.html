@@ -14,14 +14,15 @@
     <!-- Google Fonts: Rubik Glitch -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&family=Share+Tech&display=swap" rel="stylesheet">
 
     <style>
         /* Preserved Index styling tokens */
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Share Tech', Arial, sans-serif;
             color: #333;
             background-color: #000;
             /* Dark background to support the 3D canvas fade-ins */
@@ -84,6 +85,9 @@
         h2 {
             margin-top: 0;
             color: #111;
+            font-family: 'Share Tech', sans-serif;
+            font-size: 2.4rem;
+            line-height: 1.25;
         }
 
         p {
@@ -101,6 +105,22 @@
             font-size: 2.5rem;
             letter-spacing: 2px;
         }
+
+        p {
+            line-height: 1.7;
+            color: #555;
+            font-size: 2rem;
+            /* Increase paragraph size */
+        }
+
+        .author {
+            display: block;
+            margin-top: 18px;
+            font-family: 'Share Tech', sans-serif;
+            font-size: 1.75rem;
+            letter-spacing: 1px;
+            font-weight: 400;
+        }
     </style>
 </head>
 
@@ -113,7 +133,13 @@
     <div id="story">
         <!-- ================= INDEX CHAPTERS ================= -->
         <div id="intro" class="chapter active">
-            <h2>What COVID-19 Misinformation Patterns Tell Us: Countries, Sources, Narratives By Navya Asopa</h2>
+            <h2>
+                What COVID-19 Misinformation Patterns Tell Us:
+                <br>
+                Countries, Sources, Narratives
+                <br>
+                <span class="author">By Navya Asopa</span>
+            </h2>
             <p>Scroll down to track how rumors, conspiracies, and false reporting manifested across different global
                 hotspots during the pandemic.</p>
         </div>
@@ -160,7 +186,6 @@
 
         <!-- Chart 1: Why Was It Spread? -->
         <div id="chart-why" class="chapter chart-chapter">
-            <h2>Why Was It Spread?</h2>
             <iframe title="Why COVID Misinformation Was Spread?" aria-label="Bar Chart" id="datawrapper-chart-ZSJad"
                 src="https://datawrapper.dwcdn.net/ZSJad/2/" scrolling="no" frameborder="0"
                 style="width:100%; border:none;" height="306" data-external="1"></iframe>
@@ -168,7 +193,6 @@
 
         <!-- Chart 2: Motive by Type -->
         <div id="chart-motive" class="chapter chart-chapter">
-            <h2>Motive by Type</h2>
             <iframe title="COVID Misinformation: Motive by Type" aria-label="Grouped column chart"
                 id="datawrapper-chart-C5YTd" src="https://datawrapper.dwcdn.net/C5YTd/1/" scrolling="no" frameborder="0"
                 style="width:100%; border:none;" height="447" data-external="1"></iframe>
@@ -176,7 +200,6 @@
 
         <!-- Chart 3: Who Spreads Which Type -->
         <div id="chart-spreaders" class="chapter chart-chapter">
-            <h2>Who Spreads Misinformation?</h2>
             <iframe title="Who Spreads Which Type of Misinformation?" aria-label="Stacked column chart"
                 id="datawrapper-chart-IH8QE" src="https://datawrapper.dwcdn.net/IH8QE/1/" scrolling="no" frameborder="0"
                 style="width:100%; border:none;" height="428" data-external="1"></iframe>
@@ -184,7 +207,6 @@
 
         <!-- Chart 4: Type by Platform -->
         <div id="chart-platform" class="chapter chart-chapter">
-            <h2>Misinformation by Platform</h2>
             <iframe title="Misinformation Type by Platform" aria-label="Stacked column chart"
                 id="datawrapper-chart-6MAfC" src="https://datawrapper.dwcdn.net/6MAfC/1/" scrolling="no" frameborder="0"
                 style="width:100%; border:none;" height="428" data-external="1"></iframe>
