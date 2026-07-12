@@ -1,209 +1,401 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>What 2019's Movies Tell Us: Drama, Blockbusters and Hype</title>
+    <meta charset="utf-8" />
+    <title>COVID-19 Misinfo Scrollytelling</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
 
-    <!-- Google fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- MapLibre & Three.js CDN Assets -->
+    <link href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css" rel="stylesheet" />
+    <script src="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Google Fonts: Rubik Glitch -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap" rel="stylesheet">
+
     <style>
+        /* Preserved Index styling tokens */
         body {
             margin: 0;
-            font-size: 20px;
-            font-family: Georgia, 'Times New Roman', Times, serif;
-            text-rendering: optimizeLegibility;
+            padding: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: #333;
+            background-color: #000;
+            /* Dark background to support the 3D canvas fade-ins */
         }
 
-        .content {
-            max-width: 640px;
-            margin: auto;
+        /* Layered fullscreen backdrops */
+        #map,
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            transition: opacity 1.2s ease-in-out;
         }
 
-        .header {
-            padding: 3em 0;
+        #map {
+            opacity: 1;
         }
 
-        a {
-            color: #f05349;
+        #three-canvas {
+            opacity: 0;
         }
 
-        .footer {
-            background: #f4f4f4;
-            text-align: center;
-            font-size: 0.8em;
-            margin-top: 4em;
-            padding: 4em 0;
+        #story {
+            padding-top: 40vh;
+            padding-bottom: 40vh;
+            position: relative;
+            z-index: 1;
         }
 
-        figure {
-            margin: 0;
-            padding-bottom: 1.2em;
+        /* Centered chapter boxes kept exactly as requested */
+        .chapter {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            margin: 0 auto 75vh auto;
+            width: 35%;
+            min-width: 300px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s ease;
+            opacity: 0.3;
         }
 
-        figcaption {
-            font-size: 0.8em;
-            text-align: center;
-            margin-top: 0.5em;
-            color: #666;
+        /* Wider layout specifically for Datawrapper embeds */
+        .chart-chapter {
+            width: 70%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.98);
         }
 
-        h1 {
-            font-family: 'Lora', Georgia, serif;
-            font-weight: bold;
-            font-size: 3em;
-            line-height: 1.1;
+        .chapter.active {
+            opacity: 1;
+            border-left: 6px solid #dc3545;
+            transform: scale(1.02);
         }
 
-        .subhead {
-            font-family: 'Lora', Georgia, serif;
-        }
-
-        iframe,
-        img,
-        video {
-            max-width: 100%;
+        h2 {
+            margin-top: 0;
+            color: #111;
         }
 
         p {
             line-height: 1.6;
-            margin: 0;
-            padding-bottom: 1.2em;
+            color: #555;
         }
 
-        ul {
-            margin: 0;
-            padding-bottom: 1em;
-            line-height: 1.6;
+        strong {
+            color: #dc3545;
         }
 
-        iframe {
-            padding-bottom: 1.2em;
-        }
-
-        code {
-            font-family: 'Courier New', monospace;
-            background: #fffbaf;
-            font-size: 0.85em;
-        }
-
-        .full-width figure {
-            text-align: center;
-        }
-
-        /* margin on mobile */
-        @media (max-width: 640px) {
-            body {
-                font-size: 18px;
-            }
-
-            .content {
-                padding-left: 0.5em;
-                padding-right: 0.5em;
-            }
+        /* Target only the header inside the intro/landing section */
+        #intro h2 {
+            font-family: 'Rubik Glitch', system-ui, sans-serif;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
         }
     </style>
 </head>
 
 <body>
-    <div class="content">
-        <div class="header">
-            <h1>What 2019's Movies Tell Us: Drama, Blockbusters and Hype</h1>
-            <p class="subhead">A look at 500 films released in the pandemic era- Which genres dominated, which titles
-                drew
-                the most attention, and whether popularity really tracks with a good rating?</p>
+
+    <!-- Background Canvases -->
+    <div id="three-canvas"></div>
+    <div id="map"></div>
+
+    <div id="story">
+        <!-- ================= INDEX CHAPTERS ================= -->
+        <div id="intro" class="chapter active">
+            <h2>What COVID-19 Misinformation Patterns Tell Us: Countries, Sources, Narratives By Navya Asopa</h2>
+            <p>Scroll down to track how rumors, conspiracies, and false reporting manifested across different global
+                hotspots during the pandemic.</p>
         </div>
-        <div class="byline">
-            <!-- TODO: replace with your name -->
-            <p>By Navya Asopa</p>
+
+        <div id="china" class="chapter">
+            <h2>About the Dataset:</h2>
+            <p>In 2020, some researchers at Princeton University analyzed over 5,600 misinformation stories of COVID-19
+                from around 80 countries in 35 languages. This data, collected between January and December 2020,
+                explains some patterns: What kind of misinformation spreads, where it spreads, and who amplifies it?</p>
         </div>
 
-        <!-- ============================================================= -->
-        <!-- INTRO TEXT                                                    -->
-        <!-- Write your opening paragraph(s) here (aim for ~250 words      -->
-        <!-- total across the whole page)       -->
-        <!-- ============================================================= -->
-        <p>2019 was a traumatic year for most as the global pandemic, COVID-19, had hit the whole wide world. But
-            Netflix was having the time of its life. The OTT platform saw a surge in its number of subscribers, and
-            started adding a whole lot of films and TV shows, spanning across genres, audiences, and popularity to its
-            website. But what lies behind the subscription numbers in this pivotal year? What patterns, if any, defined
-            our watchlist and while we were locked inside our homes, which genres dominated our screens, which titles
-            captured our undivided attention, and did popularity actually reflect the content quality? Here’s an
-            analysis of 500 Netflix titles in 2019, with their genre distribution, vote count, vote average, and
-            popularity scores.</p>
+        <div id="us" class="chapter">
+            <h2>Affected Countries:</h2>
+            <p>While the pandemic was a shared global crisis, the misinformation it triggered was heterogeneous. China,
+                the United States, Turkey, and India reported the highest volume of misinformation.</p>
+        </div>
 
-        <!-- ======================================================= -->
-        <!-- CHART 1: TOP GENRES                                     -->
-        <!-- Paste your DataWrapper embed code for the first chart here. -->
-        <!-- ======================================================= -->
-        <iframe title="Genre of Netflix Movies &amp; TV Shows in 2019" aria-label="Stacked Bars"
-            id="datawrapper-chart-VC6KA" src="https://datawrapper.dwcdn.net/VC6KA/2/" scrolling="no" frameborder="0"
-            style="width: 0; min-width: 100% !important; border: none;" height="305" data-external="1"></iframe>
-        <script
-            type="text/javascript">!function () { "use strict"; window.addEventListener("message", (function (a) { if (void 0 !== a.data["datawrapper-height"]) { var e = document.querySelectorAll("iframe"); for (var t in a.data["datawrapper-height"]) for (var r = 0; r < e.length; r++)if (e[r].contentWindow === a.source) { var i = a.data["datawrapper-height"][t] + "px"; e[r].style.height = i } } })) }();</script>
+        <div id="india" class="chapter">
+            <h2>Social Media as Carrier:</h2>
+            <p>Misinformation spread rapidly through social media, creating what the World Health Organization termed an
+                "infodemic”. The primary channels were Facebook, Twitter, and Whatsapp.</p>
+        </div>
 
+        <!-- ================= TEXT CHAPTERS ================= -->
+        <div id="virus" class="chapter">
+            <h2>Types of Misinformation:</h2>
+            <p>There was a tremendous amount of regional variation in the nature of misinformation, dominated by false
+                reporting, and then conspiracy theories.</p>
+        </div>
 
-        <!-- Text about chart 1  -->
-        <p>Drama topped 2019 genre charts, followed by comedy and thriller, which indicates that emotionally-driven
-            narratives and fast-paced storytelling made up the bulk of Netflix’s strategy. The platform’s catalog also
-            featured animation, fantasy and romance which appeared less frequently on the list.</p>
+        <div id="globe" class="chapter">
+            <h2>Individual as the Source:</h2>
+            <p>Approximately 80% of stories were spread by individual actors, while 17% originated from media outlets or
+                political figures.</p>
+        </div>
 
-        <!-- ======================================================= -->
-        <!-- CHART 2:                        -->
-        <!-- Paste your DataWrapper embed code for the second chart here. -->
-        <!-- ======================================================= -->
-        <iframe title="Popularity of Netflix Movies &amp; TV Shows in 2019" aria-label="Bar Chart"
-            id="datawrapper-chart-SNkpI" src="https://datawrapper.dwcdn.net/SNkpI/1/" scrolling="no" frameborder="0"
-            style="width: 0; min-width: 100% !important; border: none;" height="313" data-external="1"></iframe>
-        <script
-            type="text/javascript">!function () { "use strict"; window.addEventListener("message", (function (a) { if (void 0 !== a.data["datawrapper-height"]) { var e = document.querySelectorAll("iframe"); for (var t in a.data["datawrapper-height"]) for (var r = 0; r < e.length; r++)if (e[r].contentWindow === a.source) { var i = a.data["datawrapper-height"][t] + "px"; e[r].style.height = i } } })) }();</script>
+        <div id="ending" class="chapter">
+            <h2>The Narrative:</h2>
+            <p>Misinformation travelled for a wide range of reasons- the biggest one being spread of fear, followed by
+                political motivations, and false hopes.</p>
+        </div>
 
-        <!-- Text about chart 2 -->
-        <p>Some films and shows that became a cult-favorite ranged from superhero films to animations. “Avengers:
-            Endgame” and “Frozen II” stood high up the list, and the occasional horror picks like “It Chapter Two” also
-            made it to top 10. This shows that the most-watched titles of 2019 were dominated by blockbuster films and
-            superhero sequels, which Netflix relied on to draw in large audiences.</p>
+        <!-- ================= 4 DATAWRAPPER CHARTS ================= -->
 
-        <!-- ======================================================= -->
-        <!-- CHART 3                                                 -->
-        <!-- Paste your DataWrapper embed code for the third chart here. -->
-        <!-- ======================================================= -->
-        <iframe title="Relationship b/w Popularity &amp; Vote Average" aria-label="Scatter Plot"
-            id="datawrapper-chart-AALLz" src="https://datawrapper.dwcdn.net/AALLz/1/" scrolling="no" frameborder="0"
-            style="width: 0; min-width: 100% !important; border: none;" height="395" data-external="1"></iframe>
-        <script
-            type="text/javascript">!function () { "use strict"; window.addEventListener("message", (function (a) { if (void 0 !== a.data["datawrapper-height"]) { var e = document.querySelectorAll("iframe"); for (var t in a.data["datawrapper-height"]) for (var r = 0; r < e.length; r++)if (e[r].contentWindow === a.source) { var i = a.data["datawrapper-height"][t] + "px"; e[r].style.height = i } } })) }();</script>
+        <!-- Chart 1: Why Was It Spread? -->
+        <div id="chart-why" class="chapter chart-chapter">
+            <h2>Why Was It Spread?</h2>
+            <iframe title="Why COVID Misinformation Was Spread?" aria-label="Bar Chart" id="datawrapper-chart-ZSJad"
+                src="https://datawrapper.dwcdn.net/ZSJad/2/" scrolling="no" frameborder="0"
+                style="width:100%; border:none;" height="306" data-external="1"></iframe>
+        </div>
 
+        <!-- Chart 2: Motive by Type -->
+        <div id="chart-motive" class="chapter chart-chapter">
+            <h2>Motive by Type</h2>
+            <iframe title="COVID Misinformation: Motive by Type" aria-label="Grouped column chart"
+                id="datawrapper-chart-C5YTd" src="https://datawrapper.dwcdn.net/C5YTd/1/" scrolling="no" frameborder="0"
+                style="width:100%; border:none;" height="447" data-external="1"></iframe>
+        </div>
 
+        <!-- Chart 3: Who Spreads Which Type -->
+        <div id="chart-spreaders" class="chapter chart-chapter">
+            <h2>Who Spreads Misinformation?</h2>
+            <iframe title="Who Spreads Which Type of Misinformation?" aria-label="Stacked column chart"
+                id="datawrapper-chart-IH8QE" src="https://datawrapper.dwcdn.net/IH8QE/1/" scrolling="no" frameborder="0"
+                style="width:100%; border:none;" height="428" data-external="1"></iframe>
+        </div>
 
+        <!-- Chart 4: Type by Platform -->
+        <div id="chart-platform" class="chapter chart-chapter">
+            <h2>Misinformation by Platform</h2>
+            <iframe title="Misinformation Type by Platform" aria-label="Stacked column chart"
+                id="datawrapper-chart-6MAfC" src="https://datawrapper.dwcdn.net/6MAfC/1/" scrolling="no" frameborder="0"
+                style="width:100%; border:none;" height="428" data-external="1"></iframe>
+        </div>
 
-        <!-- Text about chart 3 (optional) -->
-        <p>This plot tells a slight different story- One would assume that the more popular a film is, the more its
-            average viewer rating would be. But when popularity score was paired with the average viewer ratings for
-            2019 titles, the relationship looked uneven. While some highly popular films and shows also received strong
-            ratings by the audience, many did not. Perhaps, popularity is not directly correlated with content quality
-            or audience approval. Something to think about when you watch the next most talked-about film on Netflix!
-        </p>
-
-        <p>The full analysis &mdash; including the notebook and data &mdash; is available in the project repository.
-            <!-- TODO: replace the # below with your GitHub repo URL -->
-            <a href="#">View the code and data on GitHub</a>.
-        </p>
     </div>
 
-    <div class="footer">
-        <div class="content">
-            <p>Data: Netflix Movies and TV Shows Data Analysis <a
-                    href="https://www.kaggle.com/datasets/nalisha/netflix-movies-and-tv-shows-data-analysis">Kaggle</a>.
-                Charts built with DataWrapper. Page adapted
-                from
-                Jonathan Soma's <a href="https://github.com/jsoma/page-templates/">basic story template</a>.</p>
-        </div>
-    </div>
+    <script>
+        /* ==========================================
+           1. EMBEDDED GEODATA
+           ========================================== */
+        var geojsonData = {
+            "type": "FeatureCollection",
+            "features": [
+                { "type": "Feature", "properties": { "country": "China", "cases": 449 }, "geometry": { "type": "Point", "coordinates": [104.1954, 35.8617] } },
+                { "type": "Feature", "properties": { "country": "United States", "cases": 441 }, "geometry": { "type": "Point", "coordinates": [-95.7129, 37.0902] } },
+                { "type": "Feature", "properties": { "country": "Turkey", "cases": 300 }, "geometry": { "type": "Point", "coordinates": [35.2433, 38.9637] } },
+                { "type": "Feature", "properties": { "country": "Spain", "cases": 254 }, "geometry": { "type": "Point", "coordinates": [-3.7492, 40.4637] } },
+                { "type": "Feature", "properties": { "country": "Germany", "cases": 229 }, "geometry": { "type": "Point", "coordinates": [10.4515, 51.1657] } },
+                { "type": "Feature", "properties": { "country": "Brazil", "cases": 210 }, "geometry": { "type": "Point", "coordinates": [-51.9253, -14.235] } },
+                { "type": "Feature", "properties": { "country": "India", "cases": 205 }, "geometry": { "type": "Point", "coordinates": [78.9629, 20.5937] } },
+                { "type": "Feature", "properties": { "country": "Egypt", "cases": 196 }, "geometry": { "type": "Point", "coordinates": [30.8025, 26.8206] } },
+                { "type": "Feature", "properties": { "country": "Italy", "cases": 149 }, "geometry": { "type": "Point", "coordinates": [12.5674, 41.8719] } }
+            ]
+        };
+
+        /* ==========================================
+           2. THREE.JS ENGINE SETUP
+           ========================================== */
+        const threeContainer = document.getElementById('three-canvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.z = 8;
+
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        threeContainer.appendChild(renderer.domElement);
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(5, 5, 5);
+        scene.add(dirLight);
+
+        const virusGroup = new THREE.Group();
+        const coreGeo = new THREE.SphereGeometry(2, 32, 32);
+        const coreMat = new THREE.MeshStandardMaterial({ color: 0x990000, roughness: 0.8 });
+        const core = new THREE.Mesh(coreGeo, coreMat);
+        virusGroup.add(core);
+
+        const spikes = [];
+        const spikeMat = new THREE.MeshStandardMaterial({ color: 0xff3333 });
+        const spikeBody = new THREE.CylinderGeometry(0.04, 0.08, 0.5, 8);
+        spikeBody.translate(0, 0.25, 0);
+        const spikeHead = new THREE.SphereGeometry(0.12, 8, 8);
+        spikeHead.translate(0, 0.5, 0);
+
+        const singleSpike = new THREE.Group();
+        singleSpike.add(new THREE.Mesh(spikeBody, spikeMat));
+        singleSpike.add(new THREE.Mesh(spikeHead, spikeMat));
+
+        const numSpikes = 70;
+        for (let i = 0; i < numSpikes; i++) {
+            const spike = singleSpike.clone();
+            const phi = Math.acos(-1 + (2 * i) / numSpikes);
+            const theta = Math.sqrt(numSpikes * Math.PI) * phi;
+            spike.position.setFromSphericalCoords(2, phi, theta);
+            spike.lookAt(new THREE.Vector3(0, 0, 0));
+            spike.rotateX(Math.PI / 2);
+            spikes.push(spike);
+            virusGroup.add(spike);
+        }
+        scene.add(virusGroup);
+
+        /* ==========================================
+           3. MAPLIBRE ENGINE SETUP
+           ========================================== */
+        var map = new maplibregl.Map({
+            container: 'map',
+            style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+            center: [0, 20],
+            zoom: 1.8,
+            pitch: 0,
+            interactive: false
+        });
+
+        map.on('load', function () {
+            map.addSource('covid-data', { type: 'geojson', data: geojsonData });
+            map.addLayer({
+                id: 'covid-plots',
+                type: 'circle',
+                source: 'covid-data',
+                paint: {
+                    'circle-radius': ['interpolate', ['linear'], ['get', 'cases'], 1, 5, 450, 28],
+                    'circle-color': ['interpolate', ['linear'], ['get', 'cases'], 1, '#ffc107', 150, '#fd7e14', 300, '#dc3545', 450, '#7a0010'],
+                    'circle-opacity': 0.8,
+                    'circle-stroke-width': 1.5,
+                    'circle-stroke-color': '#ffffff'
+                }
+            });
+        });
+
+        /* ==========================================
+           4. CONSOLIDATED ENGINE CHOREOGRAPHY
+           ========================================== */
+        var chapters = {
+            'intro': { visual: 'map', center: [0, 20], zoom: 1.8, pitch: 0, bearing: 0 },
+            'china': { visual: 'map', center: [104.1954, 35.8617], zoom: 4.2, pitch: 40, bearing: -10 },
+            'us': { visual: 'map', center: [-95.7129, 37.0902], zoom: 4.0, pitch: 30, bearing: 5 },
+            'india': { visual: 'map', center: [78.9629, 20.5937], zoom: 4.5, pitch: 45, bearing: 15 },
+            'virus': { visual: 'three' },
+            'globe': { visual: 'map', center: [0, 20], zoom: 1.8, pitch: 0, bearing: 0 },
+            'ending': { visual: 'three_transform' },
+
+            // Ensure all 4 charts use the 3D virus transform background
+            'chart-why': { visual: 'three_transform' },
+            'chart-motive': { visual: 'three_transform' },
+            'chart-spreaders': { visual: 'three_transform' },
+            'chart-platform': { visual: 'three_transform' }
+        };
+
+        let currentChapter = 'intro';
+
+        // Highly performant IntersectionObserver implementation replacing manual scroll bindings
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const chapterId = entry.target.id;
+                    const config = chapters[chapterId];
+                    if (!config) return;
+
+                    currentChapter = chapterId;
+
+                    document.querySelectorAll('.chapter').forEach(el => el.classList.remove('active'));
+                    entry.target.classList.add('active');
+
+                    const mapEl = document.getElementById('map');
+                    const threeEl = document.getElementById('three-canvas');
+
+                    if (config.visual === 'three') {
+                        mapEl.style.opacity = 0;
+                        threeEl.style.opacity = 1;
+                        spikes.forEach(s => s.scale.set(1, 1, 1));
+                        coreMat.color.setHex(0x990000);
+                    }
+                    else if (config.visual === 'map') {
+                        mapEl.style.opacity = 1;
+                        threeEl.style.opacity = 0;
+
+                        map.flyTo({
+                            center: config.center,
+                            zoom: config.zoom,
+                            pitch: config.pitch,
+                            bearing: config.bearing,
+                            duration: 2500,
+                            essential: true
+                        });
+                    }
+                    else if (config.visual === 'three_transform') {
+                        mapEl.style.opacity = 0;
+                        threeEl.style.opacity = 1;
+                        spikes.forEach(s => s.scale.set(1, 0.01, 1));
+                        coreMat.color.setHex(0x5a6268);
+                    }
+                }
+            });
+        }, { rootMargin: '-40% 0px -40% 0px' });
+
+        document.querySelectorAll('.chapter').forEach(chapter => observer.observe(chapter));
+
+        /* ==========================================
+           5. 3D RENDER LOOP & RESIZE MANAGEMENT
+           ========================================== */
+        function animate() {
+            requestAnimationFrame(animate);
+
+            virusGroup.rotation.y += 0.003;
+            virusGroup.rotation.x += 0.001;
+
+            // Trigger the mutation animation if the user is on the ending or any of the 4 chart sections
+            if (currentChapter === 'ending' ||
+                currentChapter === 'chart-why' ||
+                currentChapter === 'chart-motive' ||
+                currentChapter === 'chart-spreaders' ||
+                currentChapter === 'chart-platform') {
+
+                spikes.forEach(spike => {
+                    if (spike.scale.y < 1) {
+                        spike.scale.set(1, spike.scale.y + 0.015, 1);
+                    }
+                });
+                coreMat.color.lerp(new THREE.Color(0x990000), 0.01);
+            }
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        });
+    </script>
+
+    <!-- Consolidated Datawrapper Script (Handles dynamic height for all 4 iframes) -->
+    <script type="text/javascript">
+        (function () { function e() { window.addEventListener("message", function (e) { if (e.data["datawrapper-height"] !== void 0) { var t = document.querySelectorAll("iframe"); for (var n in e.data["datawrapper-height"]) for (var r = 0, i; i = t[r]; r++)if (i.contentWindow === e.source) { var a = e.data["datawrapper-height"][n] + "px"; i.style.height = a } } }) } e() })();
+    </script>
+
 </body>
 
 </html>
