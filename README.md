@@ -17,5 +17,5 @@ Empirical Studies of Conflict, Princeton University, 2020: ESOC COVID-19 Misinfo
 ; DataWrapper
 
 
-Contact
+Contact:
 Navya Asopa, [navyaasopa@gmail.com]
